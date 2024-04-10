@@ -22,7 +22,7 @@ def run_study(hp_table, traj_paths, top_path, study_name, save_dir):
         print(hp_dict)
 
         ftrajs_all = featurizer(hp_dict, traj_paths, top_path)
-        trial_dir = save_dir/f'{hp_dict.hp_id}'
+        trial_dir = save_dir/f'{hp_dict.hp_ix}'
         trial_dir.mkdir(parents=True, exist_ok=True)
 
         bootstrap_hp_trial(hp_dict, ftrajs_all, study_name, save_dir)
@@ -78,9 +78,9 @@ def bootstrap_hp_trial(hp_dict, ftrajs_all, study_name, save_dir):
 
     for i, ix in tqdm(enumerate(ftraj_ixs), total=n_boot):
         print('\nBootstrap: ', i)
-        f_kmeans = save_dir/f'{hp_dict.hp_id}'/f'bs_{i}_kmeans_centers.npy'
-        f_tmat = save_dir/f'{hp_dict.hp_id}'/f'bs_{i}_msm_tmat.npy'
-        f_ix = save_dir/f'{hp_dict.hp_id}'/f'bs_{i}_traj_indices.npy'
+        f_kmeans = save_dir/f'{hp_dict.hp_ix}'/f'bs_{i}_kmeans_centers.npy'
+        f_tmat = save_dir/f'{hp_dict.hp_ix}'/f'bs_{i}_msm_tmat.npy'
+        f_ix = save_dir/f'{hp_dict.hp_ix}'/f'bs_{i}_traj_indices.npy'
         if f_kmeans.is_file() and f_tmat.is_file() and f_ix.is_file(): 
             print('Already exist. Continue')
             continue
@@ -156,8 +156,8 @@ def _estimate_msm(hp_dict, ftrajs, i, study_name, save_dir):
     print('Saving results')
     data = pd.DataFrame({k:v for k,v in zip(columns, results)}, index=[0])
     data.to_hdf(save_dir/f'{study_name}.h5', key=f'result_raw', mode='a', format='table', append=True, data_columns=True)
-    np.save(save_dir/f'{hp_dict.hp_id}'/f'bs_{i}_kmeans_centers.npy', kmeans_mod.clustercenters)
-    np.save(save_dir/f'{hp_dict.hp_id}'/f'bs_{i}_msm_tmat.npy', msm_mod.transition_matrix)
+    np.save(save_dir/f'{hp_dict.hp_ix}'/f'bs_{i}_kmeans_centers.npy', kmeans_mod.clustercenters)
+    np.save(save_dir/f'{hp_dict.hp_ix}'/f'bs_{i}_msm_tmat.npy', msm_mod.transition_matrix)
     
     gc.collect()
 
