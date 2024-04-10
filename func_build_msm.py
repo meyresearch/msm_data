@@ -129,7 +129,8 @@ def _kmeans(hp_dict: Dict, ttrajs: List[np.ndarray], seed: int):
 def _estimate_msm(hp_dict, ftrajs, i, study_name, save_dir):
     print('Estimating bootstrap: ', i)
     n_score = 20
-    columns = ['bs'] + ['is_sparse'] + [f't{i+2}' for i in range(n_score)] \
+    columns = ['hp_ix'] + ['markov__lag'] + ['bs'] + ['is_sparse'] \
+            + [f't{i+2}' for i in range(n_score)] \
             + [f'gap_{i+2}' for i in range(n_score)] \
             + [f'vamp2_{i+2}' for i in range(n_score)] \
             + [f'vamp2eq_{i+2}' for i in range(n_score)]
@@ -139,13 +140,15 @@ def _estimate_msm(hp_dict, ftrajs, i, study_name, save_dir):
         dtrajs, kmeans_mod = _kmeans(hp_dict, ttrajs, hp_dict.seed)
     except:
         print('TICA/Kmeans failed -- skip')
-        results = [f'{i}'].extend([np.nan]*(len(columns)-1))
+        results = [hp_dict.hp_ix, hp_dict.markov__lag, f'{i}'].extend([np.nan]*(len(columns)-3))
         return None 
     
     count_mod = TransitionCountEstimator(lagtime=hp_dict.markov__lag, count_mode='sliding').fit_fetch(dtrajs)
     msm_mod = MaximumLikelihoodMSM(reversible=True).fit_fetch(count_mod)
 
     results = []
+    results.append(hp_dict.hp_ix)
+    results.append(hp_dict.markov__lag)
     results.append(f'{i}')
     results.append(msm_mod.transition_matrix.shape[0] != hp_dict.cluster__k)
     results.extend(msm_mod.timescales()[n_score])
