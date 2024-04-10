@@ -94,12 +94,13 @@ def bootstrap_hp_trial(hp_dict, ftrajs_all, study_name, save_dir):
     return None
 
 
-def _bootstrap(ftrajs: List[np.ndarray], rng: np.random.Generator) -> List[np.ndarray]:
-    probs = np.array([x.shape[0] for x in ftrajs])
-    probs = probs/np.sum(probs)
-    ix = np.arange(len(ftrajs))
-    new_ix = rng.choice(ix,size=len(ftrajs), p=probs, replace=True)
-    return [ftrajs[i] for i in new_ix], new_ix
+def _bootstrap(lengths: np.ndarray, rng: np.random.Generator) -> List[np.ndarray]:
+    probs = lengths/np.sum(lengths)
+    ix = np.arange(len(lengths))
+    probs[-1] = 1 - np.sum(probs[0:-1])
+    new_ix = rng.choice(ix, size=len(lengths), p=probs, replace=True)
+
+    return new_ix
 
 
 def _tica(hp_dict: Dict, ftrajs: List[np.ndarray]):
