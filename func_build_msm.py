@@ -22,7 +22,7 @@ def run_study(hp_table, traj_paths, top_path, study_name, save_dir):
         print(hp_dict)
 
         ftrajs_all = featurizer(hp_dict, traj_paths, top_path)
-        trial_dir = save_dir/f'{hp_dict.hp_ix}'
+        trial_dir = save_dir/f'{hp_dict.hp_ix}'/f'lag{hp_dict.markov__lag}'
         trial_dir.mkdir(parents=True, exist_ok=True)
 
         bootstrap_hp_trial(hp_dict, ftrajs_all, study_name, save_dir)
