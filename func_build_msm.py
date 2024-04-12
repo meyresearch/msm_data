@@ -142,7 +142,7 @@ def _estimate_msm(hp_dict, ftrajs, i, study_name, save_dir):
         dtrajs, kmeans_mod = _kmeans(hp_dict, ttrajs, hp_dict.seed)
     except:
         print('TICA/Kmeans failed -- skip')
-        results = [hp_dict.hp_ix, hp_dict.markov__lag, f'{i}'].extend([np.nan]*(len(columns)-3))
+        results = [hp_dict.hp_ix, hp_dict.markov__lag, i].extend([np.nan]*(len(columns)-3))
         return None 
     
     count_mod = TransitionCountEstimator(lagtime=hp_dict.markov__lag, count_mode='sliding').fit_fetch(dtrajs)
